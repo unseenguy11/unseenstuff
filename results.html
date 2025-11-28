@@ -625,7 +625,7 @@
             const emailStatus = document.getElementById('email-status');
 
             if (emailBtn) {
-                emailBtn.addEventListener('click', () => {
+                emailBtn.addEventListener('click', async () => {
                     const email = emailInput.value;
                     if (!email || !email.includes('@')) {
                         emailStatus.textContent = "Please enter a valid email address.";
@@ -633,22 +633,50 @@
                         return;
                     }
 
-                    // Mock Sending
+                    // Get Certificate Data
+                    const certificateData = canvas.toDataURL('image/png');
+                    const name = document.getElementById('cert-name').value || 'Candidate';
+
                     emailBtn.textContent = "SENDING...";
                     emailBtn.disabled = true;
                     emailStatus.textContent = "";
 
-                    setTimeout(() => {
-                        emailBtn.textContent = "SENT!";
-                        emailStatus.textContent = `Results sent to ${email} from results@iqcheck.ink`;
-                        emailStatus.style.color = "green";
-                        emailInput.value = "";
+                    try {
+                        const response = await fetch('/api/send-email', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                email: email,
+                                name: name,
+                                score: userData.score,
+                                certificateData: certificateData
+                            }),
+                        });
 
-                        setTimeout(() => {
-                            emailBtn.textContent = "SEND";
-                            emailBtn.disabled = false;
-                        }, 3000);
-                    }, 2000);
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            emailBtn.textContent = "SENT!";
+                            emailStatus.textContent = `Results sent to ${email}`;
+                            emailStatus.style.color = "green";
+                            emailInput.value = "";
+
+                            setTimeout(() => {
+                                emailBtn.textContent = "SEND";
+                                emailBtn.disabled = false;
+                            }, 3000);
+                        } else {
+                            throw new Error(result.error || 'Failed to send');
+                        }
+                    } catch (error) {
+                        console.error('Email error:', error);
+                        emailBtn.textContent = "RETRY";
+                        emailBtn.disabled = false;
+                        emailStatus.textContent = "Error sending email. Please try again.";
+                        emailStatus.style.color = "red";
+                    }
                 });
             }
         });
