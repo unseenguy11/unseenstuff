@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Assessment Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Results Specific Styles */
+        .results-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 4px solid var(--accent-color);
+            padding-bottom: var(--spacing-lg);
+        }
+
+        .score-display {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--accent-color);
+            margin: var(--spacing-md) 0;
+        }
+
+        .percentile-badge {
+            display: inline-block;
+            background: black;
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            font-family: var(--font-mono);
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid var(--text-primary);
+            padding: var(--spacing-md);
+        }
+
+        .stat-title {
+            font-family: var(--font-mono);
+            font-weight: bold;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .breakdown-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .trait-bar {
+            height: 24px;
+            background: var(--grid-color);
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+        }
+
+        .trait-fill {
+            height: 100%;
+            background: var(--text-primary);
+            width: 0%;
+            /* Animated */
+            transition: width 1s ease-out;
+        }
+
+        .certificate-section {
+            text-align: center;
+            background: #f9f9f9;
+            padding: var(--spacing-lg);
+            border: 2px dashed var(--text-secondary);
+        }
+
+        .cert-canvas-container {
+            max-width: 100%;
+            overflow: hidden;
+            margin: var(--spacing-md) auto;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Locked State (if accessed directly without payment) -->
+        <div id="locked-view" class="hidden">
+            <div class="tech-border" style="padding: 2rem; background: white; text-align: center;">
+                <h1>ACCESS DENIED</h1>
+                <p class="hero-subtitle">// PAYMENT REQUIRED TO VIEW FULL REPORT</p>
+                <a href="index.html" class="btn primary-btn">RETURN TO ASSESSMENT</a>
+                <!-- <button id="bypass-btn" class="btn"
+                    style="margin-top: 10px; border-style: dashed; opacity: 0.7; display: block; margin-left: auto; margin-right: auto;">BYPASS
+                    (TESTING)</button> -->
+            </div>
+        </div>
+
+        <!-- Full Report (Unlocked) -->
+        <div id="report-view" class="hidden">
+            <header class="results-header">
+                <p style="font-family: var(--font-mono);">// CANDIDATE REPORT</p>
+                <div class="score-display" id="final-score">---</div>
+                <div class="percentile-badge" id="percentile-text">TOP --% OF AGE GROUP</div>
+            </header>
+
+            <div class="report-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Demographics</div>
+                    <div class="stat-value" id="demographics-display">-- / --</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Classification</div>
+                    <div class="stat-value" id="classification-display">--</div>
+                </div>
+            </div>
+
+            <section class="breakdown-section">
+                <h3>COGNITIVE BREAKDOWN</h3>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">PATTERN RECOGNITION</span>
+                        <span id="score-pattern" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-pattern" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">LOGICAL REASONING</span>
+                        <span id="score-logic" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-logic" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">SPATIAL AWARENESS</span>
+                        <span id="score-spatial" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-spatial" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">VERBAL INTELLIGENCE</span>
+                        <span id="score-verbal" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-verbal" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">NUMERICAL REASONING</span>
+                        <span id="score-numerical" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-numerical" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">ABSTRACT REASONING</span>
+                        <span id="score-abstract" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-abstract" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">CRITICAL THINKING</span>
+                        <span id="score-critical" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-critical" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-family: var(--font-mono); font-weight: bold;">PROBLEM SOLVING</span>
+                        <span id="score-problem" style="font-family: var(--font-mono);">--/100</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div id="bar-problem" class="trait-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="certificate-section">
+                <h3>OFFICIAL CERTIFICATION</h3>
+                <p style="margin-bottom: var(--spacing-md);">Enter your name to generate your official certificate.</p>
+
+                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: var(--spacing-md);">
+                    <input type="text" id="cert-name" placeholder="FULL NAME"
+                        style="padding: 10px; font-family: var(--font-mono); border: 2px solid black; width: 60%;">
+                    <button id="generate-btn" class="btn primary-btn">GENERATE</button>
+                </div>
+
+                <div class="cert-canvas-container">
+                    <canvas id="certificate-canvas"></canvas>
+                </div>
+
+                <a id="download-link" class="btn primary-btn hidden" download="IQ_Certificate.png">DOWNLOAD
+                    CERTIFICATE</a>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check access
+            const urlParams = new URLSearchParams(window.location.search);
+            const access = urlParams.get('access');
+
+            // In a real app, we would verify a token. Here we check for the flag.
+            // For testing, we'll allow it if 'access=paid' OR if we just want to see it.
+            // Let's be strict for the demo flow:
+            if (access !== 'paid') {
+                document.getElementById('locked-view').classList.remove('hidden');
+
+                // Bypass Logic (Testing)
+                const bypassBtn = document.getElementById('bypass-btn');
+                if (bypassBtn) {
+                    bypassBtn.addEventListener('click', () => {
+                        // Set a mock score if none exists
+                        if (!sessionStorage.getItem('iq_user_data')) {
+                            sessionStorage.setItem('iq_user_data', JSON.stringify({
+                                score: 120,
+                                gender: 'unknown',
+                                age: 'unknown',
+                                date: new Date().toISOString(),
+                                certificateImage: 'certificate_template_backup.png'
+                            }));
+                        }
+                        // Reload with paid access
+                        window.location.href = 'results.html?access=paid';
+                    });
+                }
+                return;
+            }
+
+            document.getElementById('report-view').classList.remove('hidden');
+
+            // Load Data
+            const storedData = sessionStorage.getItem('iq_user_data');
+            const userData = storedData ? JSON.parse(storedData) : { score: 132, gender: 'Unknown', age: 'Unknown' };
+
+            // Populate UI
+            document.getElementById('final-score').textContent = userData.score;
+            document.getElementById('demographics-display').textContent = `${userData.gender.toUpperCase()} / ${userData.age}`;
+
+            // Accurate IQ Stats Logic
+            function getIQStats(score) {
+                if (score >= 130) return { percentile: "TOP 2%", classification: "VERY SUPERIOR" };
+                if (score >= 120) return { percentile: "TOP 9%", classification: "SUPERIOR" };
+                if (score >= 110) return { percentile: "TOP 25%", classification: "HIGH AVERAGE" };
+                if (score >= 100) return { percentile: "TOP 50%", classification: "AVERAGE" };
+                if (score >= 90) return { percentile: "BOTTOM 50%", classification: "AVERAGE" };
+                if (score >= 80) return { percentile: "BOTTOM 25%", classification: "BELOW AVERAGE" };
+                if (score >= 70) return { percentile: "BOTTOM 9%", classification: "BORDERLINE IDIOT" };
+                return { percentile: "BOTTOM 2%", classification: "EXTREMELY LOW" };
+            }
+
+            // Get stats for main score
+            const mainStats = getIQStats(userData.score);
+            // Adjust percentile wording: use "BOTTOM" if percent >= 50
+            let displayPercentile = mainStats.percentile;
+            const match = displayPercentile.match(/(TOP|BOTTOM)\s*(\d+)%/);
+            if (match) {
+                const num = parseInt(match[2], 10);
+                if (match[1] === "TOP" && num >= 50) {
+                    displayPercentile = `BOTTOM ${num}%`;
+                }
+            }
+            document.getElementById('percentile-text').textContent = `${displayPercentile} OF AGE GROUP`;
+            document.getElementById('classification-display').textContent = mainStats.classification;
+
+            // Add classification below score if desired, or just log it for now
+            // console.log("Classification:", mainStats.classification);
+
+            // Add classification below score if desired, or just log it for now
+            // console.log("Classification:", mainStats.classification);
+
+            // Update Cognitive Breakdown
+            if (userData.categories) {
+                const cats = ['pattern', 'logic', 'spatial', 'verbal', 'numerical', 'abstract', 'critical', 'problem'];
+                cats.forEach(cat => {
+                    const scoreEl = document.getElementById(`score-${cat}`);
+                    const barEl = document.getElementById(`bar-${cat}`);
+                    if (scoreEl && barEl && userData.categories[cat] !== undefined) {
+                        const catScore = userData.categories[cat];
+                        // Map 0-100 scale roughly to IQ scale for classification label
+                        // 100 -> ~145, 50 -> ~100. Simple approximation: 50 + (score/2) + 25? 
+                        // Or just use simple qualitative buckets for 0-100
+                        let quality = "AVERAGE";
+                        if (catScore >= 90) quality = "VERY HIGH";
+                        else if (catScore >= 75) quality = "HIGH";
+                        else if (catScore >= 60) quality = "ABOVE AVERAGE";
+                        else if (catScore >= 40) quality = "AVERAGE";
+                        else if (catScore >= 25) quality = "BELOW AVERAGE";
+                        else quality = "LOW";
+
+                        scoreEl.textContent = `${catScore}/100 - ${quality}`;
+                        barEl.style.width = `${catScore}%`;
+                    }
+                });
+            }
+
+            // Certificate Logic
+            const canvas = document.getElementById('certificate-canvas');
+            const ctx = canvas.getContext('2d');
+            const generateBtn = document.getElementById('generate-btn');
+            const nameInput = document.getElementById('cert-name');
+            const downloadLink = document.getElementById('download-link');
+
+            // Load Template
+            const img = new Image();
+            img.src = 'certificate_template_backup.png';
+            img.onload = () => {
+                // Set canvas dimensions to match image
+                canvas.width = img.width;
+                canvas.height = img.height;
+                drawCertificate('YOUR NAME'); // Initial render
+            };
+
+            function drawCertificate(name) {
+                // Clear canvas and draw background image
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+
+                // 1. Name - Left Aligned
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'left';
+                // Moved to align with "PRESENTED TO" (approx x=0.15)
+                // Y kept at 0.40 as requested (up significantly)
+                ctx.font = 'bold 40px "Inter", sans-serif';
+                ctx.fillText(name.toUpperCase(), canvas.width * 0.42, canvas.height * 0.384);
+
+                // 2. Score - Inside Orange Box (Left Side)
+                // Box is roughly at x=15%, y=75% to x=45%, y=85%
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 80px "JetBrains Mono", monospace';
+                // Nudged LEFT
+                ctx.fillText(userData.score, canvas.width * 0.27, canvas.height * 0.81);
+
+                // 3. Date - Next to "DATE:" Label (Right Side)
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'left';
+                ctx.font = '30px "JetBrains Mono", monospace';
+                const dateStr = new Date().toLocaleDateString();
+                // Moved RIGHT and DOWN to clear label
+                ctx.fillText(dateStr, canvas.width * 0.65, canvas.height * 0.66);
+
+                // 4. ID - Next to "CERTIFICATE ID:" Label (Right Side)
+                // Left aligned with Date/Label
+                const certId = 'IQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                ctx.fillText(certId, canvas.width * 0.57, canvas.height * 0.82);
+
+                // 5. Website Link - Bottom Center
+                ctx.fillStyle = '#FF4400';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 24px "JetBrains Mono", monospace';
+                ctx.fillText("IQCHECK.ink", canvas.width / 2, canvas.height * 0.13);
+            }
+
+
+            generateBtn.addEventListener('click', () => {
+                const name = nameInput.value || 'CANDIDATE';
+                drawCertificate(name);
+
+                // Enable Download
+                downloadLink.href = canvas.toDataURL('image/png');
+                downloadLink.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+
+</html>

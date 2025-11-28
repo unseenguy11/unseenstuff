@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Assessment Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Timer Display -->
+    <div id="timer" class="timer-display hidden">05:00</div>
+
+    <div class="app-container">
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progress-container" style="display: none;">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Start Screen -->
+        <section id="start-screen" class="screen active">
+            <div class="content-wrapper">
+                <div class="tech-border" style="padding: 2rem; background: white;">
+                    <h1 class="hero-title">IQ TEST<br>PROTOCOL_V1</h1>
+                    <p class="hero-subtitle">
+                        // STATUS: READY<br>
+                        // TIME LIMIT: 5 MINUTES<br>
+                        // OBJECTIVE: PATTERN RECOGNITION
+                    </p>
+                    <button id="start-btn" class="btn primary-btn full-width">INITIALIZE TEST</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intake Screen -->
+        <section id="intake-screen" class="screen hidden">
+            <div class="content-wrapper">
+                <div class="tech-border" style="padding: 2rem; background: white;">
+                    <h2>CALIBRATION</h2>
+                    <p class="hero-subtitle" style="margin-bottom: 2rem;">// ENTER BIOMETRICS FOR ACCURACY</p>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-family: var(--font-mono); font-weight: bold; margin-bottom: 0.5rem;">GENDER</label>
+                        <div class="options-grid" style="grid-template-columns: 1fr 1fr;">
+                            <button class="option-btn intake-btn" data-type="gender" data-value="male">MALE</button>
+                            <button class="option-btn intake-btn" data-type="gender" data-value="female">FEMALE</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label
+                            style="display: block; font-family: var(--font-mono); font-weight: bold; margin-bottom: 0.5rem;">AGE
+                            RANGE</label>
+                        <div class="options-grid">
+                            <button class="option-btn intake-btn" data-type="age" data-value="18-24">18-24</button>
+                            <button class="option-btn intake-btn" data-type="age" data-value="25-34">25-34</button>
+                            <button class="option-btn intake-btn" data-type="age" data-value="35+">35+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="screen hidden">
+            <div class="content-wrapper">
+                <div id="question-container" class="question-card">
+                    <div class="question-meta">Question <span id="q-current">1</span> / <span id="q-total">15</span>
+                    </div>
+                    <h2 id="question-text" class="question-text">Question Text</h2>
+                    <div id="options-container" class="options-grid">
+                        <!-- Options injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Processing Screen -->
+        <section id="processing-screen" class="screen hidden">
+            <div class="content-wrapper">
+                <div class="processing-card" style="border: none; box-shadow: none; background: transparent;">
+                    <div class="loader-grid">
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                        <div class="loader-cell"></div>
+                    </div>
+                    <h2 id="processing-text" style="margin-top: 2rem;">PROCESSING DATA</h2>
+                    <div class="progress-line"></div>
+                    <p id="processing-sub" style="font-family: var(--font-mono); color: var(--text-secondary);">
+                        CALIBRATING...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Teaser Screen -->
+        <section id="teaser-screen" class="screen hidden">
+            <div class="content-wrapper">
+                <div class="teaser-card">
+                    <h2>ANALYSIS COMPLETE</h2>
+                    <p
+                        style="font-family: var(--font-mono); margin-bottom: 1rem; color: var(--accent-color); font-weight: bold;">
+                        // RESULT: TOP 15% (HIGH POTENTIAL)
+                    </p>
+
+                    <div class="graph-container">
+                        <div class="bar-chart">
+                            <!-- Steve Jobs -->
+                            <div class="bar-group">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Steve_Jobs_Headshot_2010-CROP.jpg/220px-Steve_Jobs_Headshot_2010-CROP.jpg"
+                                    alt="Jobs" class="bar-img">
+                                <div class="bar-value">140</div>
+                                <div class="bar famous" style="height: 70%;"></div>
+                                <div class="bar-label">JOBS</div>
+                            </div>
+                            <!-- User (Blurred) -->
+                            <div class="bar-group">
+                                <div class="bar-img-placeholder">?</div>
+                                <div class="bar-value blur-text">???</div>
+                                <div class="bar user" style="height: 85%;"></div>
+                                <div class="bar-label">YOU</div>
+                            </div>
+                            <!-- Einstein -->
+                            <div class="bar-group">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/220px-Albert_Einstein_Head.jpg"
+                                    alt="Einstein" class="bar-img">
+                                <div class="bar-value">160</div>
+                                <div class="bar famous" style="height: 100%;"></div>
+                                <div class="bar-label">EINSTEIN</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="offer-container">
+                        <div class="price-box">
+                            <span class="new-price">$9.99</span>
+                        </div>
+
+                        <div class="certificate-preview">
+                            <div class="cert-icon">📜</div>
+                            <span>INCLUDES OFFICIAL CERTIFICATE & PERFORMANCE REPORT</span>
+                        </div>
+
+                        <a id="checkout-btn" href="#" class="btn primary-btn full-width">UNLOCK FULL REPORT</a>
+                        <!-- <button id="bypass-btn" class="btn"
+                    style="margin-top: 10px; border-style: dashed; opacity: 0.7; display: block; margin-left: auto; margin-right: auto;">BYPASS
+                    (TESTING)</button> -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
