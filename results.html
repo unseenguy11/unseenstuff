@@ -242,7 +242,7 @@
                         <div class="lock-icon">🔒</div>
                         <h2>UNLOCK FULL PROFILE</h2>
                         <p>Get your personalized career matches, deep cognitive analysis, and improvement plan.</p>
-                        <div class="upsell-price">$2.49</div>
+                        <div class="upsell-price">$9.99</div>
                         <button id="upsell-btn" class="btn primary-btn">UNLOCK NOW</button>
                     </div>
 
@@ -423,8 +423,8 @@
             }
 
             function generateUpsellContent() {
-                const careers = getCareers(userData.categories);
-                const analysis = getAnalysis(userData.categories);
+                const careers = getCareers(userData.score, userData.categories);
+                const analysis = getAnalysis(userData.score, userData.categories);
 
                 // Populate Careers
                 const careerList = document.getElementById('career-list');
@@ -440,35 +440,100 @@
                 if (planEl) planEl.textContent = analysis.plan;
             }
 
-            function getCareers(cats) {
-                // Simple logic: find top 2 categories
+            function getCareers(score, cats) {
+                // Determine Tier
+                let tier = 'mid';
+                if (score >= 125) tier = 'high';
+                else if (score >= 110) tier = 'mid_high';
+                else if (score >= 95) tier = 'mid';
+                else if (score >= 80) tier = 'mid_low';
+                else tier = 'low';
+
+                // Sort categories
                 const sorted = Object.entries(cats || {}).sort((a, b) => b[1] - a[1]);
                 const top1 = sorted[0] ? sorted[0][0] : 'logic';
                 const top2 = sorted[1] ? sorted[1][0] : 'pattern';
 
-                const careerMap = {
-                    pattern: ['Data Scientist', 'Cryptographer', 'Financial Analyst'],
-                    logic: ['Software Engineer', 'Lawyer', 'Philosopher'],
-                    spatial: ['Architect', 'Civil Engineer', 'Surgeon'],
-                    verbal: ['Journalist', 'Author', 'Public Relations Specialist'],
-                    numerical: ['Accountant', 'Investment Banker', 'Statistician'],
-                    abstract: ['Theoretical Physicist', 'Mathematician', 'AI Researcher'],
-                    critical: ['Management Consultant', 'Judge', 'Strategic Planner'],
-                    problem: ['Entrepreneur', 'Emergency Manager', 'UX Designer']
+                // Career Database by Tier and Category
+                const careerDB = {
+                    high: { // 125+
+                        pattern: ['Cryptographer', 'Data Scientist', 'Quantitative Analyst'],
+                        logic: ['Neurosurgeon', 'Theoretical Physicist', 'Chief Strategy Officer'],
+                        spatial: ['Aerospace Engineer', 'Urban Planner', 'Film Director'],
+                        verbal: ['Editor-in-Chief', 'Diplomat', 'Professor'],
+                        numerical: ['Actuary', 'Economist', 'Astrophysicist'],
+                        abstract: ['AI Researcher', 'Philosopher', 'Inventor'],
+                        critical: ['Judge', 'Forensic Psychiatrist', 'Investigative Journalist'],
+                        problem: ['Crisis Manager', 'Entrepreneur', 'Venture Capitalist']
+                    },
+                    mid_high: { // 110-124
+                        pattern: ['Financial Analyst', 'Database Administrator', 'Logistics Manager'],
+                        logic: ['Software Developer', 'Civil Engineer', 'Lawyer'],
+                        spatial: ['Architect', 'Graphic Designer', 'Pilot'],
+                        verbal: ['Copywriter', 'Marketing Manager', 'Teacher'],
+                        numerical: ['Accountant', 'Auditor', 'Financial Planner'],
+                        abstract: ['UX Researcher', 'Game Designer', 'Consultant'],
+                        critical: ['Project Manager', 'Compliance Officer', 'Detective'],
+                        problem: ['Operations Manager', 'Business Analyst', 'System Admin']
+                    },
+                    mid: { // 95-109
+                        pattern: ['Quality Control Inspector', 'Scheduler', 'Dispatcher'],
+                        logic: ['Electrician', 'Paralegal', 'Lab Technician'],
+                        spatial: ['Photographer', 'Surveyor', 'Interior Designer'],
+                        verbal: ['Sales Representative', 'Customer Service Manager', 'Real Estate Agent'],
+                        numerical: ['Bookkeeper', 'Bank Teller', 'Payroll Specialist'],
+                        abstract: ['Event Planner', 'Social Media Manager', 'Recruiter'],
+                        critical: ['Police Officer', 'Nurse', 'Safety Inspector'],
+                        problem: ['Technical Support', 'Office Manager', 'Mechanic']
+                    },
+                    mid_low: { // 80-94
+                        pattern: ['Assembly Line Supervisor', 'Inventory Clerk', 'Mail Carrier'],
+                        logic: ['Plumber', 'HVAC Technician', 'Security Guard'],
+                        spatial: ['Carpenter', 'Landscaper', 'Truck Driver'],
+                        verbal: ['Retail Associate', 'Receptionist', 'Call Center Agent'],
+                        numerical: ['Cashier', 'Data Entry Clerk', 'Meter Reader'],
+                        abstract: ['Artist', 'Musician', 'Florist'],
+                        critical: ['Security Officer', 'Home Health Aide', 'Personal Assistant'],
+                        problem: ['Maintenance Worker', 'Line Cook', 'Construction Worker']
+                    },
+                    low: { // <80
+                        pattern: ['Factory Worker', 'Packer', 'Sorter'],
+                        logic: ['Janitor', 'Groundskeeper', 'Warehouse Worker'],
+                        spatial: ['Painter', 'Driver', 'Mover'],
+                        verbal: ['Greeter', 'Usher', 'Stock Clerk'],
+                        numerical: ['Ticket Taker', 'Shelf Stocker', 'Counter Attendant'],
+                        abstract: ['Laborer', 'Assistant', 'Cleaner'],
+                        critical: ['Guard', 'Attendant', 'Porter'],
+                        problem: ['Helper', 'Dishwasher', 'Cleaner']
+                    }
                 };
 
-                // Mix matches from top 2
-                const matches = [...(careerMap[top1] || []), ...(careerMap[top2] || [])];
-                // Return random 3 unique
+                // Get matches for tier
+                const tierJobs = careerDB[tier] || careerDB['mid'];
+                const matches = [...(tierJobs[top1] || []), ...(tierJobs[top2] || [])];
+
+                // Fallback if empty
+                if (matches.length === 0) return ['Generalist', 'Assistant', 'Coordinator'];
+
                 return [...new Set(matches)].sort(() => 0.5 - Math.random()).slice(0, 3);
             }
 
-            function getAnalysis(cats) {
-                // Mock analysis generation
-                return {
-                    strength: "Your cognitive profile indicates exceptional ability in pattern recognition and logical deduction. This suggests a brain wired for complex system analysis and strategic problem-solving.",
-                    plan: "To further enhance your neuroplasticity, focus on: 1. Dual N-Back training for working memory. 2. Learning a new language to boost verbal-spatial connections. 3. High-intensity interval training to improve cerebral blood flow."
-                };
+            function getAnalysis(score, cats) {
+                let strengthText = "";
+                let planText = "";
+
+                if (score >= 120) {
+                    strengthText = "Your cognitive profile indicates exceptional processing power. You excel at handling complex, abstract concepts and identifying patterns that others miss. Your brain is wired for strategic innovation.";
+                    planText = "Challenge your neuroplasticity with high-level tasks: 1. Learn a complex new skill (e.g., coding, a new language). 2. Engage in strategic gaming (Chess, Go). 3. Practice mindfulness to manage high cognitive load.";
+                } else if (score >= 100) {
+                    strengthText = "You possess a solid, adaptable intellect. You balance practical problem-solving with the ability to learn new systems effectively. You are likely a reliable and logical thinker.";
+                    planText = "To boost your cognitive performance: 1. Engage in daily 'brain training' puzzles (Sudoku, Crosswords). 2. Read diverse non-fiction to expand your knowledge base. 3. Ensure adequate sleep for memory consolidation.";
+                } else {
+                    strengthText = "Your profile suggests a practical, hands-on approach to the world. You likely prefer concrete tasks and learning by doing rather than abstract theory. You are reliable and grounded.";
+                    planText = "Focus on practical skill acquisition: 1. Master a trade or craft through repetition. 2. Use mnemonic devices to aid memory. 3. Break complex tasks into smaller, manageable steps.";
+                }
+
+                return { strength: strengthText, plan: planText };
             }
 
             // Certificate Logic
