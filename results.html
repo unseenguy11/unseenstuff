@@ -368,7 +368,7 @@
             // Email Capture Logic
             const overlay = document.getElementById('email-capture-overlay');
             const mainContent = document.getElementById('main-content');
-            const emailInput = document.getElementById('capture-email');
+            const captureEmailInput = document.getElementById('capture-email');
             const submitBtn = document.getElementById('capture-submit');
             const errorMsg = document.getElementById('capture-error');
 
@@ -382,7 +382,7 @@
             }
 
             submitBtn.addEventListener('click', async () => {
-                const email = emailInput.value;
+                const email = captureEmailInput.value;
                 if (!email || !email.includes('@')) {
                     errorMsg.textContent = "Please enter a valid email.";
                     errorMsg.style.display = "block";
