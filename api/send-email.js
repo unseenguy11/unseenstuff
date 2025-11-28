@@ -27,10 +27,11 @@ export default async function handler(req, res) {
 
     // Configure transporter
     // User must set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in Vercel
+    const port = parseInt(process.env.SMTP_PORT || '587');
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: true, // Use true for 465, false for other ports
+        port: port,
+        secure: port === 465, // True for 465, false for other ports
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
