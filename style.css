@@ -533,3 +533,84 @@ h3 {
         padding: 4px 8px;
     }
 }
+/* Upsell Section */
+.upsell-section {
+    margin: var(--spacing-xl) 0;
+    border: 2px solid var(--accent-color);
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.upsell-header {
+    background: var(--accent-color);
+    color: white;
+    padding: var(--spacing-md);
+    text-align: center;
+}
+
+.upsell-content {
+    padding: var(--spacing-lg);
+    position: relative;
+}
+
+.upsell-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.upsell-card {
+    border: 1px solid var(--grid-color);
+    padding: var(--spacing-md);
+    background: #f9f9f9;
+}
+
+.upsell-card h4 {
+    font-family: var(--font-mono);
+    color: var(--accent-color);
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+}
+
+/* Locked State */
+.locked-content {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.lock-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.upsell-price {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent-color);
+    margin: var(--spacing-md) 0;
+}
+
+@media (max-width: 768px) {
+    .upsell-grid {
+        grid-template-columns: 1fr;
+    }
+}

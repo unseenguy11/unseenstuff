@@ -119,9 +119,9 @@
                 <h1>ACCESS DENIED</h1>
                 <p class="hero-subtitle">// PAYMENT REQUIRED TO VIEW FULL REPORT</p>
                 <a href="index.html" class="btn primary-btn">RETURN TO ASSESSMENT</a>
-                <!-- <button id="bypass-btn" class="btn"
+                <button id="bypass-btn" class="btn"
                     style="margin-top: 10px; border-style: dashed; opacity: 0.7; display: block; margin-left: auto; margin-right: auto;">BYPASS
-                    (TESTING)</button> -->
+                    (TESTING)</button>
             </div>
         </div>
 
@@ -227,7 +227,50 @@
                     </div>
                 </div>
             </section>
+            </section>
 
+            <!-- Upsell Section -->
+            <section class="upsell-section" id="upsell-section">
+                <div class="upsell-header">
+                    <h3>PROFESSIONAL INTELLIGENCE PROFILE</h3>
+                    <p style="font-family: var(--font-mono);">// CAREER MATCHES & DEEP ANALYSIS</p>
+                </div>
+
+                <div class="upsell-content">
+                    <!-- Locked Overlay -->
+                    <div class="lock-overlay" id="upsell-lock">
+                        <div class="lock-icon">🔒</div>
+                        <h2>UNLOCK FULL PROFILE</h2>
+                        <p>Get your personalized career matches, deep cognitive analysis, and improvement plan.</p>
+                        <div class="upsell-price">$2.49</div>
+                        <button id="upsell-btn" class="btn primary-btn">UNLOCK NOW</button>
+                    </div>
+
+                    <!-- Content (Blurred initially) -->
+                    <div class="locked-content" id="upsell-data">
+                        <div class="upsell-grid">
+                            <div class="upsell-card">
+                                <h4>TOP 3 CAREER MATCHES</h4>
+                                <ul id="career-list" style="list-style: none; font-family: var(--font-mono);">
+                                    <!-- Dynamic Content -->
+                                    <li>> [LOCKED]</li>
+                                    <li>> [LOCKED]</li>
+                                    <li>> [LOCKED]</li>
+                                </ul>
+                            </div>
+                            <div class="upsell-card">
+                                <h4>COGNITIVE STRENGTHS</h4>
+                                <p id="strength-analysis" style="font-size: 0.9rem;">[LOCKED ANALYSIS]</p>
+                            </div>
+                        </div>
+
+                        <div class="upsell-card">
+                            <h4>NEUROPLASTICITY IMPROVEMENT PLAN</h4>
+                            <p id="improvement-plan" style="font-size: 0.9rem;">[LOCKED PLAN]</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
             <section class="certificate-section">
                 <h3>OFFICIAL CERTIFICATION</h3>
                 <p style="margin-bottom: var(--spacing-md);">Enter your name to generate your official certificate.</p>
@@ -346,6 +389,86 @@
                         barEl.style.width = `${catScore}%`;
                     }
                 });
+            }
+
+            // Upsell Logic
+            const upsellBtn = document.getElementById('upsell-btn');
+            const upsellLock = document.getElementById('upsell-lock');
+            const upsellData = document.getElementById('upsell-data');
+
+            // Check if already unlocked
+            if (sessionStorage.getItem('upsell_unlocked') === 'true') {
+                unlockUpsell();
+            }
+
+            if (upsellBtn) {
+                upsellBtn.addEventListener('click', () => {
+                    // Mock Payment/Unlock
+                    upsellBtn.textContent = "PROCESSING...";
+                    setTimeout(() => {
+                        sessionStorage.setItem('upsell_unlocked', 'true');
+                        unlockUpsell();
+                    }, 1500);
+                });
+            }
+
+            function unlockUpsell() {
+                if (!upsellLock || !upsellData) return;
+
+                upsellLock.style.display = 'none';
+                upsellData.classList.remove('locked-content');
+
+                // Generate Content based on categories
+                generateUpsellContent();
+            }
+
+            function generateUpsellContent() {
+                const careers = getCareers(userData.categories);
+                const analysis = getAnalysis(userData.categories);
+
+                // Populate Careers
+                const careerList = document.getElementById('career-list');
+                if (careerList) {
+                    careerList.innerHTML = careers.map(c => `<li>> ${c.toUpperCase()}</li>`).join('');
+                }
+
+                // Populate Analysis
+                const strengthEl = document.getElementById('strength-analysis');
+                if (strengthEl) strengthEl.textContent = analysis.strength;
+
+                const planEl = document.getElementById('improvement-plan');
+                if (planEl) planEl.textContent = analysis.plan;
+            }
+
+            function getCareers(cats) {
+                // Simple logic: find top 2 categories
+                const sorted = Object.entries(cats || {}).sort((a, b) => b[1] - a[1]);
+                const top1 = sorted[0] ? sorted[0][0] : 'logic';
+                const top2 = sorted[1] ? sorted[1][0] : 'pattern';
+
+                const careerMap = {
+                    pattern: ['Data Scientist', 'Cryptographer', 'Financial Analyst'],
+                    logic: ['Software Engineer', 'Lawyer', 'Philosopher'],
+                    spatial: ['Architect', 'Civil Engineer', 'Surgeon'],
+                    verbal: ['Journalist', 'Author', 'Public Relations Specialist'],
+                    numerical: ['Accountant', 'Investment Banker', 'Statistician'],
+                    abstract: ['Theoretical Physicist', 'Mathematician', 'AI Researcher'],
+                    critical: ['Management Consultant', 'Judge', 'Strategic Planner'],
+                    problem: ['Entrepreneur', 'Emergency Manager', 'UX Designer']
+                };
+
+                // Mix matches from top 2
+                const matches = [...(careerMap[top1] || []), ...(careerMap[top2] || [])];
+                // Return random 3 unique
+                return [...new Set(matches)].sort(() => 0.5 - Math.random()).slice(0, 3);
+            }
+
+            function getAnalysis(cats) {
+                // Mock analysis generation
+                return {
+                    strength: "Your cognitive profile indicates exceptional ability in pattern recognition and logical deduction. This suggests a brain wired for complex system analysis and strategic problem-solving.",
+                    plan: "To further enhance your neuroplasticity, focus on: 1. Dual N-Back training for working memory. 2. Learning a new language to boost verbal-spatial connections. 3. High-intensity interval training to improve cerebral blood flow."
+                };
             }
 
             // Certificate Logic
