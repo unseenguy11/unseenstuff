@@ -307,12 +307,11 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.1</div>
+        v1.2</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Check access
             const urlParams = new URLSearchParams(window.location.search);
-            const access = urlParams.get('access');
 
             // In a real app, we would verify a token. Here we check for the flag.
             // For testing, we'll allow it if 'access=paid' OR if we just want to see it.
