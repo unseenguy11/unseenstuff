@@ -85,6 +85,10 @@ document.querySelectorAll('.intake-btn').forEach(btn => {
             selectedGender = value;
         } else if (type === 'age') {
             selectedAge = value;
+        }
+
+        // Only start if both are selected
+        if (selectedGender && selectedAge) {
             setTimeout(startQuiz, 300);
         }
     });

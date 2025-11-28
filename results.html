@@ -275,18 +275,32 @@
                 <h3>OFFICIAL CERTIFICATION</h3>
                 <p style="margin-bottom: var(--spacing-md);">Enter your name to generate your official certificate.</p>
 
-                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: var(--spacing-md);">
-                    <input type="text" id="cert-name" placeholder="FULL NAME"
-                        style="padding: 10px; font-family: var(--font-mono); border: 2px solid black; width: 60%;">
-                    <button id="generate-btn" class="btn primary-btn">GENERATE</button>
+                <div class="form-group" style="max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="cert-name" placeholder="ENTER FULL NAME"
+                        style="width: 100%; padding: 10px; font-family: var(--font-mono); margin-bottom: 10px; text-transform: uppercase;">
+                    <button id="generate-btn" class="btn primary-btn full-width">GENERATE CERTIFICATE</button>
                 </div>
 
                 <div class="cert-canvas-container">
                     <canvas id="certificate-canvas"></canvas>
                 </div>
 
-                <a id="download-link" class="btn primary-btn hidden" download="IQ_Certificate.png">DOWNLOAD
-                    CERTIFICATE</a>
+                <a id="download-link" class="btn" style="display: none; margin-top: 10px;">DOWNLOAD CERTIFICATE</a>
+
+                <!-- Email Results Section -->
+                <div
+                    style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px dashed var(--grid-color);">
+                    <h4>EMAIL RESULTS</h4>
+                    <p style="font-size: 0.9rem; margin-bottom: var(--spacing-sm);">Receive your full report and
+                        certificate via email.</p>
+                    <div class="form-group" style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
+                        <input type="email" id="email-input" placeholder="name@example.com"
+                            style="flex: 1; padding: 10px; font-family: var(--font-mono);">
+                        <button id="email-btn" class="btn" style="background: black; color: white;">SEND</button>
+                    </div>
+                    <p id="email-status"
+                        style="font-family: var(--font-mono); font-size: 0.8rem; margin-top: 10px; height: 20px;"></p>
+                </div>
             </section>
         </div>
     </div>
@@ -600,9 +614,43 @@
                 drawCertificate(name);
 
                 // Enable Download
+                downloadLink.download = `IQ_Certificate_${name.replace(/\s+/g, '_')}.png`;
                 downloadLink.href = canvas.toDataURL('image/png');
-                downloadLink.classList.remove('hidden');
+                downloadLink.style.display = 'inline-block';
             });
+
+            // Email Logic
+            const emailBtn = document.getElementById('email-btn');
+            const emailInput = document.getElementById('email-input');
+            const emailStatus = document.getElementById('email-status');
+
+            if (emailBtn) {
+                emailBtn.addEventListener('click', () => {
+                    const email = emailInput.value;
+                    if (!email || !email.includes('@')) {
+                        emailStatus.textContent = "Please enter a valid email address.";
+                        emailStatus.style.color = "red";
+                        return;
+                    }
+
+                    // Mock Sending
+                    emailBtn.textContent = "SENDING...";
+                    emailBtn.disabled = true;
+                    emailStatus.textContent = "";
+
+                    setTimeout(() => {
+                        emailBtn.textContent = "SENT!";
+                        emailStatus.textContent = `Results sent to ${email} from results@iqcheck.ink`;
+                        emailStatus.style.color = "green";
+                        emailInput.value = "";
+
+                        setTimeout(() => {
+                            emailBtn.textContent = "SEND";
+                            emailBtn.disabled = false;
+                        }, 3000);
+                    }, 2000);
+                });
+            }
         });
     </script>
 </body>
