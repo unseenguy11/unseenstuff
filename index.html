@@ -143,24 +143,36 @@
                         </div>
                     </div>
 
-                    <div class="offer-container">
-                        <div class="price-box">
-                            <span class="old-price">$9.99</span>
-                            <span class="new-price">$3.49</span>
-                        </div>
-
-                        <div class="certificate-preview">
-                            <div class="cert-icon">📜</div>
-                            <span>INCLUDES OFFICIAL CERTIFICATE & PERFORMANCE REPORT</span>
-                        </div>
-
-                        <a id="checkout-btn" href="#" class="btn primary-btn full-width">UNLOCK FULL REPORT</a>
-                        <button id="bypass-btn" class="btn full-width"
-                            style="margin-top: 10px; border-style: dashed; opacity: 0.7;">BYPASS (TESTING)</button>
-                    </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Email Capture Section -->
+            <div id="email-capture-container" style="margin-top: 2rem; text-align: center;">
+                <p style="margin-bottom: 1rem; font-weight: bold;">Where should we send your results?</p>
+                <input type="email" id="lead-email" placeholder="Enter your email address"
+                    style="width: 100%; padding: 12px; margin-bottom: 1rem; border: 2px solid #eee; border-radius: 8px; font-size: 16px;">
+                <button id="submit-lead-btn" class="btn primary-btn full-width">CONTINUE</button>
+                <p id="lead-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></p>
+            </div>
+
+            <div class="offer-container" style="display: none;"> <!-- Hidden initially -->
+                <div class="price-box">
+                    <span class="old-price">$9.99</span>
+                    <span class="new-price">$3.49</span>
+                </div>
+
+                <div class="certificate-preview">
+                    <div class="cert-icon">📜</div>
+                    <span>INCLUDES OFFICIAL CERTIFICATE & PERFORMANCE REPORT</span>
+                </div>
+
+                <a id="checkout-btn" href="#" class="btn primary-btn full-width">UNLOCK FULL REPORT</a>
+                <button id="bypass-btn" class="btn full-width"
+                    style="margin-top: 10px; border-style: dashed; opacity: 0.7;">BYPASS (TESTING)</button>
+            </div>
+    </div>
+    </div>
+    </section>
     </div>
 
     <div
