@@ -151,44 +151,6 @@ img.onload = () => {
         drawCertificate('YOUR NAME');
     }
 };
-const submitLeadBtn = document.getElementById('submit-lead-btn');
-const leadEmailInput = document.getElementById('lead-email');
-const leadError = document.getElementById('lead-error');
-
-if (submitLeadBtn) {
-    submitLeadBtn.addEventListener('click', async () => {
-        const email = leadEmailInput.value;
-        if (!email || !email.includes('@')) {
-            leadError.textContent = "Please enter a valid email address.";
-            leadError.style.display = 'block';
-            return;
-        }
-
-        submitLeadBtn.textContent = "PLEASE WAIT...";
-        submitLeadBtn.disabled = true;
-
-        // Save email to storage
-        const stored = JSON.parse(sessionStorage.getItem('iq_user_data') || '{}');
-        stored.email = email;
-        sessionStorage.setItem('iq_user_data', JSON.stringify(stored));
-
-        try {
-            // Capture lead
-            await fetch('/api/capture-lead', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
-        } catch (e) {
-            console.error("Lead capture failed", e);
-        }
-
-        // Redirect to results/product page
-        const returnUrl = encodeURIComponent(window.location.origin + '/' + CONFIG.resultsPage + '?access=paid');
-        window.location.href = `${CONFIG.resultsPage}?access=paid`; // Direct redirect for now
-    });
-}
-
 // End of certificate generation block
 
 if (checkoutBtn) {

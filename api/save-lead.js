@@ -19,13 +19,15 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { email } = req.body;
+    const { email, score } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Configure transporter
+    console.log(`[LEAD CAPTURE] Email: ${email}, Score: ${score}`);
+
+    // Configure transporter (reuse existing setup)
     const port = parseInt(process.env.SMTP_PORT || '587');
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -38,19 +40,21 @@ export default async function handler(req, res) {
     });
 
     try {
-        // Send notification to Admin
-        await transporter.sendMail({
-            from: process.env.SMTP_FROM,
-            to: process.env.SMTP_USER, // Send to Admin
-            subject: 'New Lead Captured - IQ Assessment',
-            text: `New lead email captured: ${email}`,
-            html: `<p>New lead captured:</p><h2>${email}</h2>`
-        });
+        // Send notification to Admin (using SMTP_USER as admin email for now)
+        const mailOptions = {
+            from: process.env.SMTP_FROM || '"IQ Check System" <system@iqcheck.ink>',
+            to: process.env.SMTP_USER, // Send to the admin's email
+            subject: `New Lead Captured: ${email}`,
+            text: `New lead captured!\n\nEmail: ${email}\nIQ Score: ${score}\n\n(This lead is logged in Vercel and emailed to you since no DB is connected yet.)`,
+        };
 
-        return res.status(200).json({ message: 'Lead captured' });
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({ message: 'Lead saved successfully' });
     } catch (error) {
-        console.error('Lead capture error:', error);
-        // Don't block the user flow if admin email fails, just log it
-        return res.status(200).json({ message: 'Lead captured (offline)' });
+        console.error('Lead save error:', error);
+        // Even if email fails, we return success to the user so they can proceed, 
+        // as long as we logged it above.
+        return res.status(200).json({ message: 'Lead saved (email notification failed)' });
     }
 }

@@ -108,11 +108,66 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Email Capture Overlay Styles */
+        #email-capture-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #email-capture-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .capture-card {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        #email-capture-overlay.active .capture-card {
+            transform: translateY(0);
+        }
+
+        .blur-content {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
     </style>
 </head>
 
 <body>
-    <div class="app-container">
+    <div id="email-capture-overlay">
+        <div class="capture-card">
+            <h2 style="margin-bottom: 1rem;">Analysis Complete</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Where should we send your results?</p>
+            <input type="email" id="capture-email" placeholder="Enter your email address"
+                style="width: 100%; padding: 12px; margin-bottom: 1rem; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px;">
+            <button id="capture-submit" class="btn primary-btn" style="width: 100%;">UNLOCK RESULTS</button>
+            <p id="capture-error" style="color: red; font-size: 0.8rem; margin-top: 0.5rem; display: none;"></p>
+        </div>
+    </div>
+
+    <div class="app-container" id="main-content">
         <!-- Locked State (if accessed directly without payment) -->
         <div id="locked-view" class="hidden">
             <div class="tech-border" style="padding: 2rem; background: white; text-align: center;">
@@ -310,8 +365,67 @@
         v1.2</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Email Capture Logic
+            const overlay = document.getElementById('email-capture-overlay');
+            const mainContent = document.getElementById('main-content');
+            const emailInput = document.getElementById('capture-email');
+            const submitBtn = document.getElementById('capture-submit');
+            const errorMsg = document.getElementById('capture-error');
+
+            // Check if email is already captured
+            const savedEmail = localStorage.getItem('user_email');
+
+            if (!savedEmail) {
+                // Show overlay
+                overlay.classList.add('active');
+                mainContent.classList.add('blur-content');
+            }
+
+            submitBtn.addEventListener('click', async () => {
+                const email = emailInput.value;
+                if (!email || !email.includes('@')) {
+                    errorMsg.textContent = "Please enter a valid email.";
+                    errorMsg.style.display = "block";
+                    return;
+                }
+
+                submitBtn.textContent = "UNLOCKING...";
+                submitBtn.disabled = true;
+
+                try {
+                    // Save lead
+                    await fetch('/api/save-lead', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: email,
+                            score: localStorage.getItem('iq_score') || 'Unknown'
+                        })
+                    });
+
+                    // Save locally
+                    localStorage.setItem('user_email', email);
+
+                    // Unlock
+                    overlay.classList.remove('active');
+                    mainContent.classList.remove('blur-content');
+
+                    // Pre-fill the bottom email form if it exists
+                    const bottomEmailInput = document.getElementById('email-input');
+                    if (bottomEmailInput) bottomEmailInput.value = email;
+
+                } catch (e) {
+                    console.error(e);
+                    // Unlock anyway on error to not block user
+                    overlay.classList.remove('active');
+                    mainContent.classList.remove('blur-content');
+                    localStorage.setItem('user_email', email);
+                }
+            });
+
             // Check access
             const urlParams = new URLSearchParams(window.location.search);
+            const access = urlParams.get('access');
 
             // In a real app, we would verify a token. Here we check for the flag.
             // For testing, we'll allow it if 'access=paid' OR if we just want to see it.
