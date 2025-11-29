@@ -24,7 +24,7 @@ const questions = [
     { id: 15, text: "A is the father of B. But B is not the son of A. How is that possible?", options: ["B is the daughter", "A is the mother", "B is the uncle", "Impossible"], correct: 0, category: "logic" },
     { id: 16, text: "Which word is the opposite of 'Benevolent'?", options: ["Kind", "Malevolent", "Generous", "Helpful"], correct: 1, category: "verbal" },
     { id: 17, text: "What is 15% of 200?", options: ["20", "25", "30", "35"], correct: 2, category: "numerical" },
-    { id: 18, text: "Which shape completes the matrix? (Imagine a 2x2 grid)", options: ["Circle", "Square", "Triangle", "Star"], correct: 0, category: "abstract" },
+    { id: 18, text: "Which shape is the odd one out?", options: ["Triangle", "Square", "Rectangle", "Circle"], correct: 3, category: "abstract" },
     { id: 19, text: "If it rains, the ground is wet. The ground is wet. Therefore:", options: ["It rained", "Someone spilled water", "It might have rained", "It is sunny"], correct: 2, category: "critical" },
     { id: 20, text: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", options: ["Echo", "Ghost", "Cloud", "Shadow"], correct: 0, category: "problem" }
 ];
