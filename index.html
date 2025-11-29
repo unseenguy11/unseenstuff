@@ -27,7 +27,6 @@
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
         #email-capture-overlay.active {
@@ -43,8 +42,6 @@
             text-align: center;
             max-width: 400px;
             width: 90%;
-            transform: translateY(20px);
-            transition: transform 0.4s ease;
         }
 
         #email-capture-overlay.active .capture-card {
@@ -55,7 +52,6 @@
             filter: blur(15px);
             pointer-events: none;
             user-select: none;
-            transition: filter 0.5s ease;
         }
     </style>
 </head>
@@ -223,10 +219,9 @@
         </div>
     </div>
 
-    <div <div
+    <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.2</div>
-    v1.3</div>
+        v1.4</div>
     <script src="script.js"></script>
     <script>
         // Email Capture Logic for Teaser Page
@@ -241,11 +236,9 @@
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.target.classList.contains('active') && !localStorage.getItem('user_email')) {
-                        // Trigger overlay
-                        setTimeout(() => {
-                            overlay.classList.add('active');
-                            document.querySelector('.teaser-card').classList.add('blur-content');
-                        }, 500); // Small delay for effect
+                        // Trigger overlay instantly
+                        overlay.classList.add('active');
+                        document.querySelector('.teaser-card').classList.add('blur-content');
                     }
                 });
             });
