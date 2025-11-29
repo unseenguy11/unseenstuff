@@ -50,7 +50,40 @@ export default async function handler(req, res) {
             text: `New lead captured!\n\nEmail: ${email}\nIQ Score: ${score}\n\n(This lead is logged in Vercel and emailed to you since no DB is connected yet.)`,
         };
 
-        await transporter.sendMail(mailOptions);
+        // Parallel execution: Send Admin Email + Sync to Brevo
+        const emailPromise = transporter.sendMail(mailOptions);
+
+        const brevoPromise = (async () => {
+            if (!process.env.BREVO_API_KEY) return;
+            try {
+                const response = await fetch('https://api.brevo.com/v3/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'content-type': 'application/json',
+                        'api-key': process.env.BREVO_API_KEY
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        attributes: {
+                            IQ_SCORE: score,
+                            SOURCE: 'IQ_ASSESSMENT'
+                        },
+                        updateEnabled: true
+                    })
+                });
+                if (!response.ok) {
+                    const err = await response.text();
+                    console.error('Brevo Sync Failed:', err);
+                } else {
+                    console.log('Brevo Sync Success');
+                }
+            } catch (e) {
+                console.error('Brevo Sync Error:', e);
+            }
+        })();
+
+        await Promise.allSettled([emailPromise, brevoPromise]);
 
         return res.status(200).json({ message: 'Lead saved successfully' });
     } catch (error) {
