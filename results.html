@@ -294,7 +294,7 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.18</div>
+        v1.19</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -416,7 +416,7 @@
                 upsellBtn.addEventListener('click', () => {
                     // Redirect to Stripe Upsell ($9.99)
                     const email = localStorage.getItem('user_email');
-                    let url = 'https://buy.stripe.com/5kQ7sLaHP0fXfQnbQo53O03';
+                    let url = 'https://buy.stripe.com/fZu8wPaHPaUBgUrcUs53O01';
                     if (email) {
                         url += `?prefilled_email=${encodeURIComponent(email)}`;
                     }
