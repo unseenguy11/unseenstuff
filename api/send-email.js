@@ -25,6 +25,12 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Email is required' });
     }
 
+    // Skip for test email to save credits
+    if (email === 'test@test.com') {
+        console.log('Test email detected. Skipping send.');
+        return res.status(200).json({ message: 'Test email skipped (success)' });
+    }
+
     // Configure transporter
     // User must set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in Vercel
     const port = parseInt(process.env.SMTP_PORT || '587');
