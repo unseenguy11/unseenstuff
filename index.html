@@ -220,7 +220,7 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.11</div>
+        v1.12</div>
     <script src="script.js"></script>
     <script>
         // Email Capture Logic for Teaser Page
@@ -287,6 +287,20 @@
                     localStorage.setItem('user_email', email);
                 }
             });
+
+            // Stripe Checkout Logic
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const email = localStorage.getItem('user_email');
+                    let url = 'https://buy.stripe.com/bJe00j4jr8MtcEb9Ig53O00';
+                    if (email) {
+                        url += `?prefilled_email=${encodeURIComponent(email)}`;
+                    }
+                    window.location.href = url;
+                });
+            }
         });
     </script>
 </body>

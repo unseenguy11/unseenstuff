@@ -294,7 +294,7 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.11</div>
+        v1.12</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -409,12 +409,13 @@
 
             if (upsellBtn) {
                 upsellBtn.addEventListener('click', () => {
-                    // Mock Payment/Unlock
-                    upsellBtn.textContent = "PROCESSING...";
-                    setTimeout(() => {
-                        sessionStorage.setItem('upsell_unlocked', 'true');
-                        unlockUpsell();
-                    }, 1500);
+                    // Redirect to Stripe Upsell ($9.99)
+                    const email = localStorage.getItem('user_email');
+                    let url = 'https://buy.stripe.com/fZu8wPaHPaUBgUrcUs53O01';
+                    if (email) {
+                        url += `?prefilled_email=${encodeURIComponent(email)}`;
+                    }
+                    window.location.href = url;
                 });
             }
 
