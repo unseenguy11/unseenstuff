@@ -294,7 +294,7 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.17</div>
+        v1.18</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -401,6 +401,11 @@
             const upsellBtn = document.getElementById('upsell-btn');
             const upsellLock = document.getElementById('upsell-lock');
             const upsellData = document.getElementById('upsell-data');
+
+            // Check URL for upsell unlock (from Stripe redirect)
+            if (urlParams.get('upsell') === 'true') {
+                sessionStorage.setItem('upsell_unlocked', 'true');
+            }
 
             // Check if already unlocked
             if (sessionStorage.getItem('upsell_unlocked') === 'true') {
