@@ -288,28 +288,13 @@
                 </div>
 
                 <a id="download-link" class="btn" style="display: none; margin-top: 10px;">DOWNLOAD CERTIFICATE</a>
-
-                <!-- Email Results Section -->
-                <div
-                    style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px dashed var(--grid-color);">
-                    <h4>EMAIL RESULTS</h4>
-                    <p style="font-size: 0.9rem; margin-bottom: var(--spacing-sm);">Receive your full report and
-                        certificate via email.</p>
-                    <div class="form-group" style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
-                        <input type="email" id="email-input" placeholder="name@example.com"
-                            style="flex: 1; padding: 10px; font-family: var(--font-mono);">
-                        <button id="email-btn" class="btn" style="background: black; color: white;">SEND</button>
-                    </div>
-                    <p id="email-status"
-                        style="font-family: var(--font-mono); font-size: 0.8rem; margin-top: 10px; height: 20px;"></p>
-                </div>
             </section>
         </div>
     </div>
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.6</div>
+        v1.7</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -663,7 +648,7 @@
                             email: targetEmail,
                             name: name,
                             score: userData.score,
-                            certificateData: certificateData
+                            categories: userData.categories // Pass breakdown data
                         }),
                     });
 

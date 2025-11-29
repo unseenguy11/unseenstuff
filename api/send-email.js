@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { email, name, score, certificateData } = req.body;
+    const { email, name, score, categories } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
@@ -38,34 +38,63 @@ export default async function handler(req, res) {
         },
     });
 
+    // Format categories for email
+    let breakdownHtml = '';
+    if (categories) {
+        const cats = [
+            { key: 'pattern', label: 'Pattern Recognition' },
+            { key: 'logic', label: 'Logical Reasoning' },
+            { key: 'spatial', label: 'Spatial Awareness' },
+            { key: 'verbal', label: 'Verbal Intelligence' },
+            { key: 'numerical', label: 'Numerical Reasoning' },
+            { key: 'abstract', label: 'Abstract Reasoning' },
+            { key: 'critical', label: 'Critical Thinking' },
+            { key: 'problem', label: 'Problem Solving' }
+        ];
+
+        breakdownHtml = `
+            <div style="margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 20px;">
+                <h3 style="margin-bottom: 15px;">COGNITIVE BREAKDOWN</h3>
+                <table style="width: 100%; border-collapse: collapse; font-family: monospace;">
+                    ${cats.map(cat => `
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${cat.label.toUpperCase()}</td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">${categories[cat.key] || 0}/100</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            </div>
+        `;
+    }
+
     try {
         const mailOptions = {
             from: process.env.SMTP_FROM || '"IQ Assessment" <results@iqcheck.ink>',
             to: email,
             subject: 'Your Official IQ Assessment Results',
             html: `
-                <div style="font-family: monospace; padding: 20px; border: 1px solid #ccc;">
-                    <h2 style="text-transform: uppercase;">IQ Assessment Protocol // Results</h2>
-                    <p>CANDIDATE: ${name || 'UNKNOWN'}</p>
-                    <p>STATUS: COMPLETED</p>
-                    <div style="background: #000; color: #fff; padding: 15px; margin: 20px 0; display: inline-block;">
-                        <h1 style="margin: 0; font-size: 24px;">IQ SCORE: ${score}</h1>
+                <div style="font-family: monospace; padding: 20px; border: 1px solid #ccc; max-width: 600px; margin: 0 auto;">
+                    <h2 style="text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px;">IQ Assessment Protocol // Results</h2>
+                    
+                    <div style="margin: 20px 0;">
+                        <p><strong>CANDIDATE:</strong> ${email}</p>
+                        <p><strong>STATUS:</strong> COMPLETED</p>
+                        <p><strong>DATE:</strong> ${new Date().toLocaleDateString()}</p>
                     </div>
-                    <p>Your official certificate is attached to this transmission.</p>
-                    <br>
-                    <p style="font-size: 12px; color: #666;">IQCHECK.INK // OFFICIAL RECORD</p>
+
+                    <div style="background: #000; color: #fff; padding: 20px; text-align: center; margin: 30px 0;">
+                        <span style="font-size: 14px; display: block; margin-bottom: 5px;">OFFICIAL IQ SCORE</span>
+                        <h1 style="margin: 0; font-size: 48px;">${score}</h1>
+                    </div>
+
+                    ${breakdownHtml}
+
+                    <div style="margin-top: 30px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                        <p>IQCHECK.INK // OFFICIAL RECORD</p>
+                    </div>
                 </div>
             `,
         };
-
-        if (certificateData) {
-            mailOptions.attachments = [
-                {
-                    filename: `IQ_Certificate_${(name || 'User').replace(/\s+/g, '_')}.png`,
-                    path: certificateData
-                }
-            ];
-        }
 
         await transporter.sendMail(mailOptions);
 
