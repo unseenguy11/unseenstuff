@@ -220,7 +220,7 @@
 
     <div
         style="position: fixed; bottom: 5px; right: 5px; font-family: monospace; font-size: 10px; color: #ccc; pointer-events: none;">
-        v1.12</div>
+        v1.13</div>
     <script src="script.js"></script>
     <script>
         // Email Capture Logic for Teaser Page
@@ -294,7 +294,7 @@
                 checkoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     const email = localStorage.getItem('user_email');
-                    let url = 'https://buy.stripe.com/bJe00j4jr8MtcEb9Ig53O00';
+                    let url = 'https://buy.stripe.com/fZu14n4jr0fX7jR5s053O02';
                     if (email) {
                         url += `?prefilled_email=${encodeURIComponent(email)}`;
                     }
