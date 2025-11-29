@@ -183,41 +183,7 @@ if (checkoutBtn) {
     });
 }
 
-if (bypassBtn) {
-    bypassBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Retrieve the latest calculated score from sessionStorage
-        const stored = JSON.parse(sessionStorage.getItem('iq_user_data') || '{}');
 
-        // If score is missing (e.g. dev testing without taking quiz), generate mock data
-        if (stored.score === undefined) {
-            stored.score = 135; // Mock high score
-            stored.categories = {
-                pattern: Math.floor(Math.random() * 40) + 60,
-                logic: Math.floor(Math.random() * 40) + 60,
-                spatial: Math.floor(Math.random() * 40) + 60,
-                verbal: Math.floor(Math.random() * 40) + 60,
-                numerical: Math.floor(Math.random() * 40) + 60,
-                abstract: Math.floor(Math.random() * 40) + 60,
-                critical: Math.floor(Math.random() * 40) + 60,
-                problem: Math.floor(Math.random() * 40) + 60
-            };
-        }
-
-        const userData = {
-            score: stored.score,
-            gender: selectedGender || 'unknown',
-            age: selectedAge || 'unknown',
-            date: new Date().toISOString(),
-            certificateImage: 'certificate_template_backup.png',
-            categories: stored.categories || {}
-        };
-        sessionStorage.setItem('iq_user_data', JSON.stringify(userData));
-
-        // Direct redirect to results
-        window.location.href = CONFIG.resultsPage + '?access=paid';
-    });
-}
 
 // Functions
 function startIntake() {

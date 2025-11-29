@@ -25,11 +25,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Skip for test email to save credits
-    if (email === 'test@test.com') {
-        console.log('Test email detected. Skipping lead save.');
-        return res.status(200).json({ message: 'Test lead skipped (success)' });
-    }
+
 
     console.log(`[LEAD CAPTURE] Email: ${email}, Score: ${score}`);
 
