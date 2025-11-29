@@ -42,6 +42,17 @@ body {
         linear-gradient(var(--grid-color) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
     background-size: 40px 40px;
+
+    /* Hide Scrollbar */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari/Opera */
 }
 
 /* Technical Layout Elements */
@@ -232,6 +243,11 @@ h3 {
     font-family: var(--font-mono);
     font-size: 1rem;
     transition: all 0.1s ease;
+    color: var(--text-primary);
+    /* Force black text */
+    -webkit-appearance: none;
+    /* Remove iOS default styling */
+    appearance: none;
 }
 
 .option-btn:hover {
